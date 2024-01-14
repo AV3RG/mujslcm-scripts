@@ -1,23 +1,28 @@
-import time
-
 from prettytable import PrettyTable
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.common.by import By
 
-ATTENDANCE_URL = "https://mujslcm.jaipur.manipal.edu:122/Student/Academic/AttendanceSummaryForStudent"
+GPA_URL = "https://mujslcm.jaipur.manipal.edu:122/Student/Academic/CGPAGPAForStudent"
 
 
-def gather_attendance(browser):
-    print("Loading attendance...")
-    browser.get(ATTENDANCE_URL)
+def gather_grades(browser):
+    print("Loading gpa...")
+    browser.get(GPA_URL)
     WebDriverWait(browser, 10).until(ec.visibility_of_element_located((By.ID, "kt_ViewTable")))
     table = browser.find_element("id", "kt_ViewTable")
-    table_heads = (table.find_element("tag name", "thead").find_element("tag name", "tr")
-                   .find_elements("tag name", "th"))
+
     display = PrettyTable()
-    display.field_names = [head.text for head in table_heads]
-    print(display.field_names)
+    head_row = list(map(lambda x: x.text, table.find_element("tag name", "thead").find_elements("tag name", "tr")[0]
+                        .find_elements("tag name", "th")))
+    fields = []
+    for col in head_row:
+        if col.startswith("Semester"):
+            fields.append(f"{col} GPA")
+            fields.append(f"{col} Credits")
+        else:
+            fields.append(col)
+    display.field_names = fields
     table_rows = table.find_elements("tag name", "tr")
     for row in table_rows:
         cols = row.find_elements("tag name", "td")
@@ -26,6 +31,5 @@ def gather_attendance(browser):
             array.append(col.text)
         if len(array) == 0:
             continue
-        print(array)
         display.add_row(array)
     print(display)

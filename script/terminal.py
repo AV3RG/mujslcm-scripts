@@ -23,17 +23,17 @@ def gather_inputs():
             """)
 
     def get_name():
-        return os.getenv("NAME") or prompt(Text("username", message="Please enter your name: "))
+        return os.getenv("NAME") or prompt(Text("username", message="Please enter your name: "))["username"]
 
     def get_registration_number():
         return os.getenv("REGISTRATION_NUMBER") or prompt(Text(
                 "registration_number",
                 message="Please enter your registration number: ",
                 validate=lambda _, x: len(x) == 9 and x.isdigit()
-            ))
+            ))["registration_number"]
 
     def get_password():
-        return os.getenv("PASSWORD") or prompt(Password("password", message="Please enter your password: "))
+        return os.getenv("PASSWORD") or prompt(Password("password", message="Please enter your password: "))["password"]
 
     def get_browser():
         return prompt(List(
@@ -44,8 +44,8 @@ def gather_inputs():
                     "Chrome"
                 ],
                 default="Firefox",
-                carousel=True
-            ))
+                carousel=True,
+            ))["browser"]
 
     def get_headless_option():
         return prompt(List(
@@ -57,7 +57,7 @@ def gather_inputs():
                 ],
                 default="Yes (recommended)",
                 carousel=True
-            ))
+            ))["headless"]
 
     check_env_exist()
     name = get_name()
